@@ -94,9 +94,9 @@ if args.timeout <= 0: exit("Error: timeout should not be a negative number or ze
 
 if not args.iterations:
     if args.strategy == "opfuzz":
-        args.iterations = 300
+        args.iterations = 2
     else:
-        args.iterations = 30
+        args.iterations = 1
 
 if args.iterations <= 0: exit("Error: iterations should not be a negative number zero.")
 

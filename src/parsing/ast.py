@@ -296,7 +296,7 @@ class SMTLIBCommand:
     def __hash__(self):
         return self.cmd_str.__hash__()
 
-def Var(name,type, is_indexed_id=False):
+def Var(name, type, is_indexed_id=False):
     return Term(name=name,type=type, is_var=True, is_indexed_id=is_indexed_id)
 
 def Const(name, is_indexed_id=False,type="Unknown"):

@@ -79,19 +79,28 @@ def create_var_map(m1, m2, templates):
     """
     supported_types = list(templates.keys())
     mapping=[]
-    for t in m1:   
+    for t in m1:
+        print('on type:', t)
         if not t in m2: continue 
         if not t in supported_types: continue
+        print('type selected:', t)
         len_m1 = len(m1[t])
         len_m2 = len(m2[t])
         random_tuples = random_tuple_list(m1[t],m2[t])
+        print('random tuples:', random_tuples)
         for tup in random_tuples: 
             mapping.append((tup[0], tup[1], random.choice(templates[t])))
+        print('mapping:', mapping)
+    print('='*10)
     return mapping 
 
 
 def random_mr_tuples(occs1,occs2,templates):
     m1, m2 = type_var_map(occs1), type_var_map(occs2)
+    print('type_var_map 1-----------------')
+    print(m1)
+    print('type_var_map 2-----------------')
+    print(m2)
     var_map = create_var_map(m1,m2, templates)
 
     if var_map == []: 
@@ -102,10 +111,17 @@ def random_mr_tuples(occs1,occs2,templates):
         x_name, y_name, template = v[0], v[1], v[2]
         var_occs1 = [var for var in occs1 if var.name == v[0]]
         var_occs2 = [var for var in occs2 if var.name == v[1]]
+        print('var_occs1 -----------------')
+        print(var_occs1)
+        print('var_occs2 -----------------')
+        print(var_occs2)
         random_occs = random_tuple_list(var_occs1, var_occs2)
+        print('random_occs -----------------')
+        print(random_occs)
         
         for occ in random_occs: 
             metamorphic_tuples.append(MetamorphicTuple(template,occ[0], occ[1]))
+    print('metamorphic_tuples:', metamorphic_tuples)
     return metamorphic_tuples
 
 def add_fusion_constraints(formula,asserts):

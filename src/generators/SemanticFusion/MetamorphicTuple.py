@@ -8,6 +8,7 @@ def gen_random_string(length):
     letters = string.ascii_lowercase
     return ''.join(random.choice(letters) for i in range(length))
 
+
 class MetamorphicTuple:
     def __init__(self, template, x, y):
         self.template = copy.deepcopy(template)
@@ -17,10 +18,28 @@ class MetamorphicTuple:
         self.c = None
         self.r = None
 
+        print('\n\n')
+        print('*** construct MetamorphicTuple Object ****')
+        print('template:', template)
+        print('template.free_var_occs:', template.free_var_occs)
+        # print('template.commands:')
+        # print(template.commands)
+        print('template.commands:')
+        for cmd in self.template.commands:
+            print('[before] cmd:', cmd.__str__())
+        print('x:', x)
+        print('y:', y)
+        print('z:', self.z)
+
+
         new_cmds = []
         for v in template.free_var_occs:
             if v.name == "c":
                 self.c = v
+                if self.c.type == "Int": self.r = random.randint(-1000,1000)
+                if self.c.type == "Real": self.r = round(random.uniform(-1000, 1000),1)
+                if self.c.type == "Bool": self.r = random.choice(["true","false"])
+                if self.c.type == "String": self.r = '"'+gen_random_string(length)+'"'
                 break
         
         for cmd in template.commands:
@@ -28,18 +47,21 @@ class MetamorphicTuple:
                if cmd.symbol == "c":
                     continue
             new_cmds.append(cmd)
+        print('newnewne.commands:')
+        print(new_cmds)
 
         self.template.commands = new_cmds
         for i, cmd in enumerate(self.template.commands):
             if isinstance(cmd, Assert):
                 break
-        if self.c:
-            if self.c.type == "Int": self.r = random.randint(-1000,1000)
-            if self.c.type == "Real": self.r = round(random.uniform(-1000, 1000),1)
-            if self.c.type == "Bool": self.r = random.choice(["true","false"])
-            if self.c.type == "String": self.r = '"'+gen_random_string(length)+'"'
+        # if self.c:
+        #     if self.c.type == "Int": self.r = random.randint(-1000,1000)
+        #     if self.c.type == "Real": self.r = round(random.uniform(-1000, 1000),1)
+        #     if self.c.type == "Bool": self.r = random.choice(["true","false"])
+        #     if self.c.type == "String": self.r = '"'+gen_random_string(length)+'"'
 
         for ass in self.template.commands[i:]:
+            # print('term:', ass.term.__str__())
             ass.term.substitute_all(Var("x",self.x.type),x)
             ass.term.substitute_all(Var("y",self.y.type),y)
             ass.term.substitute_all(Var("z",self.z.type),self.z)
@@ -47,8 +69,14 @@ class MetamorphicTuple:
                 print("self.c_substituent", self.c_substituent())
                 print("c.name",self.c.name)
                 ass.term.substitute_all(Var("c", self.z.type), self.c_substituent())
-                
-   
+        print('### construct MetamorphicTuple Object ###\n')
+        print('template.commands:')
+        # for ass in self.template.commands[i:]:
+            # print('[after] term:', ass.term.__str__())
+        for cmd in self.template.commands:
+            print('[after] cmd:', cmd.__str__())
+
+        
     def x_substituent(self):
         cmds = self.template.commands
         return cmds[4].term.subterms[1]

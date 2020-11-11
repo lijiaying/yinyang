@@ -13,7 +13,6 @@ from src.generators.TypeAwareOpMutation import TypeAwareOpMutation
 from src.generators.SemanticFusion.SemanticFusion import SemanticFusion
 
 class Fuzzer:
-
     def __init__(self, args):
         self.args = args
         self.currentseeds = ""
@@ -24,6 +23,7 @@ class Fuzzer:
 
     def run(self):
         seeds = self.args.PATH_TO_SEEDS
+        print('seeds:', seeds)
         if (self.args.strategy == "opfuzz" and len(seeds) == 1) or \
            (self.args.strategy == "fusion"  and len(seeds) == 2):
             self.runforever = False
@@ -41,8 +41,11 @@ class Fuzzer:
                 fusion_seeds = [seed1, seed2]
                 self.generator = SemanticFusion(fusion_seeds, self.args.oracle, self.args.fusionfun)
             else: assert(False)
+            
             for i in range(self.args.iterations):
+                print('iteration', i, '-'*60)
                 self.statistic.mutants += 1
+                print('  generating...')
                 formula, success = self.generator.generate()
 
                 if not success:
@@ -56,14 +59,15 @@ class Fuzzer:
                     print(log,flush=True)
                     exit(1)
 
-
             if not self.runforever:
                 exit(0)
 
             if self.runforever:
                 self.statistic.printbar()
 
+
     def validate(self, formula):
+        print('  validating...')
         ret = True
         log_str = ""
         if (self.args.oracle == "unknown"):
@@ -136,6 +140,7 @@ class Fuzzer:
 
         return ret, log_str
 
+
     def report(self, trigger, bugtype, cli, output, report_id, reference=None, bad_result=None):
         plain_cli = plain(cli)
         #<solver><{crash,wrong,invalid_model}><seed-name>.<random-string>.smt2
@@ -167,8 +172,12 @@ class Fuzzer:
 
         return report_id, log_str
 
+
     def __del__(self):
         if not self.args.keep_mutants:
-            os.remove("%s/%s.smt2" % (self.args.scratchfolder, self.args.name))
+            filepath = "%s/%s.smt2" % (self.args.scratchfolder, self.args.name)
+            # print("remove file", filepath)
+            assert os.path.isfile(filepath)
+            os.remove(filepath)
         if self.runforever:
             self.statistic.printsum()
